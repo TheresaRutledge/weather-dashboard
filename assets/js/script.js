@@ -3,6 +3,7 @@ const apiKey = '92d341cc17041755a8b8a4b27e865a34';
 //html element to append weather data
  let currentContainerEl = document.querySelector('#current-weather');
  let forecastContainerEl = document.querySelector('#forecast-weather');
+ let formSubmit = document.querySelector('#citySearch');
  let date = moment().format('M/DD/YYYY');
 
 
@@ -49,7 +50,7 @@ function displayCurrent(data) {
     let iconEl = document.createElement('img');
     iconEl.setAttribute('src', `http://openweathermap.org/img/wn/${iconID}@2x.png`);
     iconEl.setAttribute('width','50px');
-    
+
     locationEl.appendChild(iconEl);
     currentContainerEl.appendChild(locationEl);
 
@@ -88,7 +89,7 @@ function getUvConditions(uv) {
 }
 
 function displayForecast(lat,lon){
-    let apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,hourly,minutely&appid=${apiKey}`;
+    let apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,hourly,minutely&units=imperial&appid=${apiKey}`;
     fetch(apiUrl)
     .then(function(response){
         if(response.ok){
@@ -121,7 +122,7 @@ function displayForecast(lat,lon){
                     
                     //temp
                     let tempEl =document.createElement('p');
-                    tempEl.textContent=`Temp: ${data.daily[i].temp.day} °F`;
+                    tempEl.textContent=`Temp: ${Math.round((data.daily[i].temp.day)*10)/10} °F`;
                     dayCard.appendChild(tempEl);
 
                     //humidity
@@ -142,6 +143,8 @@ function displayForecast(lat,lon){
 
 //gets the current & future weather conditions for city
 function getWeather(city) {
+    currentContainerEl.textContent='';
+    forecastContainerEl.textContent='';
     let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`;
     fetch(apiUrl)
         .then(function (response) {
@@ -155,4 +158,14 @@ function getWeather(city) {
         })
 }
 
-getWeather('san francisco');
+formSubmit.addEventListener('submit',function (event){
+    event.preventDefault();
+    let input = document.querySelector('#cityInput').value;
+    if(!input){
+        alert('Please enter a valid city');
+    } else {
+
+        getWeather(input);
+    }
+})
+// getWeather('san francisco');
