@@ -4,7 +4,10 @@ const apiKey = '92d341cc17041755a8b8a4b27e865a34';
  let currentContainerEl = document.querySelector('#current-weather');
  let forecastContainerEl = document.querySelector('#forecast-weather');
  let formSubmit = document.querySelector('#citySearch');
+ let citiesContainerEl = document.querySelector(".list-group");
  let date = moment().format('M/DD/YYYY');
+
+ var previousCities = [];
 
 
 //fetch UV index, create html element and append to currentContainer
@@ -156,6 +159,32 @@ function getWeather(city) {
                     })
             }
         })
+        city = city.toLowerCase();
+        city = city.charAt(0).toUpperCase() +city.slice(1);
+        storeCity(city);
+}
+
+function storeCity(city){
+    previousCities.push(city);
+    localStorage.setItem('cities',JSON.stringify(previousCities));
+    displayCities();
+}
+
+function loadCities() {
+    if(previousCities.length>0){
+    previousCities = JSON.parse(localStorage.getItem('cities'));
+    displayCities();
+    }
+}
+
+function displayCities () {
+    for (i=0;i<previousCities.length;i++){
+        let listItem = document.createElement('li');
+        listItem.classList = 'list-group-item';
+        listItem.textContent = previousCities[i];
+        citiesContainerEl.appendChild(listItem);
+    }
+
 }
 
 formSubmit.addEventListener('submit',function (event){
@@ -168,4 +197,5 @@ formSubmit.addEventListener('submit',function (event){
         getWeather(input);
     }
 })
-// getWeather('san francisco');
+
+loadCities();
