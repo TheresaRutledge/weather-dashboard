@@ -16,31 +16,37 @@
         <h1>Weather Dashboard</h1>
     </header>
 
-    <div class='container'>
+    <div class='container-fluid p-5'>
         <div class='row'>
-        <!-- Left col-->
-        <div class='col-4 bg-light'>
-            <!-- city search -->
-            <form id='citySearch'>
-                <div class='form-group'>
-                    <label for='cityInput'>Search for a City:</label>
-                    <div class='input-group w-75'>
-                        <input type='text' class='form-control' id='cityInput'>
-                        <button type='submit' class='btn btn-primary'><span
-                                class="oi oi-magnifying-glass"></span></button>
+            <!-- Left col-->
+            <div class='col-4 bg-light'>
+                <!-- city search -->
+                <form id='citySearch'>
+                    <div class='form-group'>
+                        <label for='cityInput'>Search for a City:</label>
+                        <div class='input-group w-75'>
+                            <input type='text' class='form-control' id='cityInput'>
+                            <button type='submit' class='btn btn-primary'><span
+                                    class="oi oi-magnifying-glass"></span></button>
+                        </div>
                     </div>
+                </form>
+                <!-- previous cities -->
+                <div>
+                    <ul class='list-group'>
+                        <!-- <li class='list-group-item'><a href=''>City One</a></li> -->
+                    </ul>
                 </div>
-            </form>
-            <!-- previous cities -->
-            <div>
-                <ul class='list-group'>
-                    <li class='list-group-item'><a href=''>City One</a></li>
-                </ul>
             </div>
-        </div>
-        <!-- Right col -->
-        <div class='col-8' id='weatherContainer'>
-        </div>
+            <!-- Right col -->
+            <div class='col-8' id='weatherContainer'>
+                <div class='border p-3' id='current-weather'></div>
+                <div id='forecast-weather'></div>
+                 
+
+
+
+            </div>
         </div>
     </div>
 

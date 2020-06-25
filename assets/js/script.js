@@ -1,14 +1,14 @@
 
+const apiKey = '92d341cc17041755a8b8a4b27e865a34';
 //html element to append weather data
-let containerEL = document.querySelector('#weatherContainer');
- //div for current weather
- let currentContainerEl = document.createElement('div');
- currentContainerEl.classList = 'border p-3';
+ let currentContainerEl = document.querySelector('#current-weather');
+ let forecastContainerEl = document.querySelector('#forecast-weather');
+ let date = moment().format('M/DD/YYYY');
 
 
 //fetch UV index, create html element and append to currentContainer
 function getUvIndex(lat, lon) {
-    let apiUrl = `http://api.openweathermap.org/data/2.5/uvi?appid=92d341cc17041755a8b8a4b27e865a34&lat=${lat}&lon=${lon}`
+    let apiUrl = `http://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${lat}&lon=${lon}`
     fetch(apiUrl)
         .then(function (response) {
             if (response.ok) {
@@ -37,7 +37,7 @@ function displayCurrent(data) {
     let wind = Math.round((data.wind.speed)*10)/10;
     let iconID = data.weather[0].icon;
 
-    let date = moment().format('MM/DD/YYYY');
+
 
     //html element to append current weather
     let containerEL = document.querySelector('#weatherContainer');
@@ -48,7 +48,8 @@ function displayCurrent(data) {
 
     let iconEl = document.createElement('img');
     iconEl.setAttribute('src', `http://openweathermap.org/img/wn/${iconID}@2x.png`);
-
+    iconEl.setAttribute('width','50px');
+    
     locationEl.appendChild(iconEl);
     currentContainerEl.appendChild(locationEl);
 
@@ -67,8 +68,10 @@ function displayCurrent(data) {
     windEl.textContent = `Wind Speed: ${wind} MPH`;
     currentContainerEl.appendChild(windEl);
 
-    containerEL.appendChild(currentContainerEl);
+
     getUvIndex(data.coord.lat,data.coord.lon);
+
+    displayForecast(data.coord.lat,data.coord.lon);
 }
 
 //returns correct badge class depending on UV index
@@ -84,13 +87,62 @@ function getUvConditions(uv) {
     }
 }
 
-function displayForecast(data){
-    
+function displayForecast(lat,lon){
+    let apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,hourly,minutely&appid=${apiKey}`;
+    fetch(apiUrl)
+    .then(function(response){
+        if(response.ok){
+            response.json()
+            .then(function(data){
+                let forecastTitleEl = document.createElement('h3');
+                forecastTitleEl.textContent = '5-Day Forecast';
+                forecastContainerEl.appendChild(forecastTitleEl);
+
+                let forecastContainerRow = document.createElement('div');
+                forecastContainerRow.classList ='row';
+            
+                for(i=0;i<5;i++){
+                    let newDate = moment().clone().add(i+1,'day').format('M/DD/YYYY');
+                    let dayCard = document.createElement('div');
+                    dayCard.classList = 'card bg-primary text-light col-sm ml-2 mr-2';
+
+                    //date
+                    let dateEl = document.createElement('p');
+                    dateEl.classList='font-weight-bold';
+                    dateEl.textContent = newDate;
+                   dayCard.appendChild(dateEl);
+                    
+                    //icon
+                    let iconEl = document.createElement('img');
+                    let iconID = data.daily[i].weather[0].icon;
+                    iconEl.setAttribute('src', `http://openweathermap.org/img/wn/${iconID}@2x.png`);
+                    iconEl.setAttribute('width','50px');
+                    dayCard.appendChild(iconEl);
+                    
+                    //temp
+                    let tempEl =document.createElement('p');
+                    tempEl.textContent=`Temp: ${data.daily[i].temp.day} °F`;
+                    dayCard.appendChild(tempEl);
+
+                    //humidity
+                    let humidityEl = document.createElement('p');
+                    humidityEl.textContent = `Humidity: ${data.daily[i].humidity}%`;
+                    dayCard.appendChild(humidityEl);
+
+                    forecastContainerRow.appendChild(dayCard);
+
+
+                }
+                forecastContainerEl.appendChild(forecastContainerRow);
+            })
+        }
+    })
+
 }
 
 //gets the current & future weather conditions for city
 function getWeather(city) {
-    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=92d341cc17041755a8b8a4b27e865a34`;
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`;
     fetch(apiUrl)
         .then(function (response) {
             if (response.ok) {
@@ -98,7 +150,6 @@ function getWeather(city) {
                     .then(function (data) {
                         // save temp humidity, wind speed & UV index
                         displayCurrent(data);
-                        displayForecast(data);
                     })
             }
         })
