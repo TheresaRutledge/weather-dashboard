@@ -69,6 +69,10 @@ function getUvIndex(lat, lon) {
                         uvEl.appendChild(uvbadgeEl);
                         currentContainerEl.appendChild(uvEl);
                     })
+            } else {
+                let uvEl = document.createElement('p');
+                uvEl.textContent = `UV Index: Unable to get UV index`;
+                console.log(response.statusText);
             }
         })
 
