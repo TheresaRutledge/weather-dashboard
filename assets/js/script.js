@@ -24,7 +24,7 @@ function displayCurrent(data) {
     locationEl.textContent = `${city} (${date})`;
 
     let iconEl = document.createElement('img');
-    iconEl.setAttribute('src', `http://openweathermap.org/img/wn/${iconID}@2x.png`);
+    iconEl.setAttribute('src', `https://openweathermap.org/img/wn/${iconID}@2x.png`);
     iconEl.setAttribute('width', '50px');
 
     locationEl.appendChild(iconEl);
@@ -120,7 +120,7 @@ function displayForecast(lat, lon) {
                             //icon
                             let iconEl = document.createElement('img');
                             let iconID = data.daily[i].weather[0].icon;
-                            iconEl.setAttribute('src', `http://openweathermap.org/img/wn/${iconID}@2x.png`);
+                            iconEl.setAttribute('src', `https://openweathermap.org/img/wn/${iconID}@2x.png`);
                             iconEl.setAttribute('width', '50px');
                             dayCard.appendChild(iconEl);
 
