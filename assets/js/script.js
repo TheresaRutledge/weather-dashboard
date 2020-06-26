@@ -1,6 +1,5 @@
 
 const apiKey = '92d341cc17041755a8b8a4b27e865a34';
-//html element to append weather data
 let currentContainerEl = document.querySelector('#current-weather');
 let forecastContainerEl = document.querySelector('#forecast-weather');
 let formSubmit = document.querySelector('#citySearch');
@@ -9,39 +8,13 @@ let date = moment().format('M/DD/YYYY');
 
 var previousCities = [];
 
-
-//fetch UV index, create html element and append to currentContainer
-function getUvIndex(lat, lon) {
-    let apiUrl = `http://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${lat}&lon=${lon}`
-    fetch(apiUrl)
-        .then(function (response) {
-            if (response.ok) {
-                response.json()
-                    .then(function (data) {
-                        let uvIndex = data.value;
-
-                        let uvEl = document.createElement('p');
-                        uvEl.textContent = `UV Index: `;
-                        let uvbadgeEl = document.createElement('span');
-                        uvbadgeEl.classList = getUvConditions(uvIndex);
-                        uvbadgeEl.textContent = uvIndex;
-                        uvEl.appendChild(uvbadgeEl);
-                        currentContainerEl.appendChild(uvEl);
-                    })
-            }
-        })
-
-}
-
-//display current weather information for city
+//fetch and display current weather information for city
 function displayCurrent(data) {
     let city = data.name;
     let temp = Math.round((data.main.temp) * 10) / 10;
     let humidity = data.main.humidity;
     let wind = Math.round((data.wind.speed) * 10) / 10;
     let iconID = data.weather[0].icon;
-
-
 
     //html element to append current weather
     let containerEL = document.querySelector('#weatherContainer');
@@ -72,10 +45,33 @@ function displayCurrent(data) {
     windEl.textContent = `Wind Speed: ${wind} MPH`;
     currentContainerEl.appendChild(windEl);
 
-
+    //get and display UV index
     getUvIndex(data.coord.lat, data.coord.lon);
-
+    //get and display 5 day forecast
     displayForecast(data.coord.lat, data.coord.lon);
+}
+
+//fetch UV index, create html element and append to currentContainer
+function getUvIndex(lat, lon) {
+    let apiUrl = `http://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${lat}&lon=${lon}`
+    fetch(apiUrl)
+        .then(function (response) {
+            if (response.ok) {
+                response.json()
+                    .then(function (data) {
+                        let uvIndex = data.value;
+
+                        let uvEl = document.createElement('p');
+                        uvEl.textContent = `UV Index: `;
+                        let uvbadgeEl = document.createElement('span');
+                        uvbadgeEl.classList = getUvConditions(uvIndex);
+                        uvbadgeEl.textContent = uvIndex;
+                        uvEl.appendChild(uvbadgeEl);
+                        currentContainerEl.appendChild(uvEl);
+                    })
+            }
+        })
+
 }
 
 //returns correct badge class depending on UV index
@@ -91,6 +87,7 @@ function getUvConditions(uv) {
     }
 }
 
+//fetch and display 5 day forecast data
 function displayForecast(lat, lon) {
     let apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,hourly,minutely&units=imperial&appid=${apiKey}`;
     fetch(apiUrl)
@@ -134,8 +131,6 @@ function displayForecast(lat, lon) {
                             dayCard.appendChild(humidityEl);
 
                             forecastContainerRow.appendChild(dayCard);
-
-
                         }
                         forecastContainerEl.appendChild(forecastContainerRow);
                     })
@@ -144,7 +139,7 @@ function displayForecast(lat, lon) {
 
 }
 
-//gets the current & future weather conditions for city
+//fetch the current weather conditions for city
 function getWeather(city) {
     currentContainerEl.textContent = '';
     forecastContainerEl.textContent = '';
@@ -156,29 +151,41 @@ function getWeather(city) {
                     .then(function (data) {
                         // save temp humidity, wind speed & UV index
                         displayCurrent(data);
+                        city = city.toLowerCase();
+                        city = city.charAt(0).toUpperCase() + city.slice(1);
+                        storeCity(city);
                     })
+            } else {
+                alert(response.statusText);
             }
         })
-    city = city.toLowerCase();
-    city = city.charAt(0).toUpperCase() + city.slice(1);
-    storeCity(city);
 }
 
+//store cities searched to array and localStorage
 function storeCity(city) {
+    for (i = 0; i < previousCities.length; i++) {
+        if (previousCities[i] === city) {
+            previousCities.splice(i, 1);
+            previousCities.unshift(city);
+            displayCities();
+            return;
+        }
+    }
     previousCities.push(city);
     localStorage.setItem('cities', JSON.stringify(previousCities));
     displayCities();
 }
 
+//load previously searched cities from localStorage
 function loadCities() {
     let newArr = JSON.parse(localStorage.getItem('cities'));
     if (newArr) {
         previousCities = newArr;
         displayCities();
     }
-
 }
 
+//display previos cities searched
 function displayCities() {
     citiesContainerEl.textContent = '';
     for (i = 0; i < previousCities.length; i++) {
@@ -187,21 +194,23 @@ function displayCities() {
         listItem.textContent = previousCities[i];
         citiesContainerEl.appendChild(listItem);
     }
-
 }
 
+//listen for city search submit
 formSubmit.addEventListener('submit', function (event) {
     event.preventDefault();
     let input = document.querySelector('#cityInput').value;
-    if (!input) {
-        alert('Please enter a valid city');
-    } else {
 
+    if (!input) {
+        alert('Please enter a city');
+    } else {
         getWeather(input);
+        formSubmit.reset();
     }
 })
 
-document.querySelector('ul').addEventListener('click',function(event){
+//listen for click on previous city searched
+document.querySelector('ul').addEventListener('click', function (event) {
     getWeather(event.target.textContent);
 })
 loadCities();

@@ -16,14 +16,14 @@
         <h1>Weather Dashboard</h1>
     </header>
 
-    <div class='container-fluid p-5'>
+    <div class='container-fluid p-3'>
         <div class='row'>
-            <!-- Left col-->
+            <!-- Left col: search and history-->
             <div class='col-4 bg-light'>
                 <!-- city search -->
                 <form id='citySearch'>
                     <div class='form-group'>
-                        <label for='cityInput'>Search for a City:</label>
+                        <label for='cityInput' class='font-weight-bold'>Search for a City:</label>
                         <div class='input-group w-75'>
                             <input type='text' class='form-control' id='cityInput'>
                             <button type='submit' class='btn btn-primary'><span
@@ -38,14 +38,12 @@
                     </ul>
                 </div>
             </div>
-            <!-- Right col -->
+            <!-- Right col: Weather Info -->
             <div class='col-8' id='weatherContainer'>
+                <!-- current weather container -->
                 <div class='border p-3' id='current-weather'></div>
+                <!-- forecast weather container -->
                 <div id='forecast-weather'></div>
-                 
-
-
-
             </div>
         </div>
     </div>
