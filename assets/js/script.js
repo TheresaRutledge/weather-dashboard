@@ -53,7 +53,7 @@ function displayCurrent(data) {
 
 //fetch UV index, create html element and append to currentContainer
 function getUvIndex(lat, lon) {
-    let apiUrl = `http://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${lat}&lon=${lon}`
+    let apiUrl = `https://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${lat}&lon=${lon}`
     fetch(apiUrl)
         .then(function (response) {
             if (response.ok) {
